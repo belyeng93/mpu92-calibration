@@ -9,9 +9,12 @@ ser = serial.Serial()
 
 
 def mcu_serial_start(port_name = 'COM6', baudrate = 115200):
+	print("Opening port: " + port_name + " baudrate: " + str(baudrate))
 	ser.baudrate = baudrate
 	ser.port = port_name
+	
 	signal.signal(signal.SIGINT, signal_handler)
+
 	ser.open()
 	return ser.is_open
 
@@ -29,6 +32,7 @@ def mcu_serial_get_data():
 
 
 def signal_handler(sig, frame):
-	print('You pressed Ctrl+C!')
+	print('Serial close')
 	ser.close()
-	sys.exit(0)
+	
+	# sys.exit(0)

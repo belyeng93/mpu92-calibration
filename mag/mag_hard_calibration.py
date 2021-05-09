@@ -14,7 +14,7 @@
 # wait 5-sec for IMU to connect
 USING_SERIAL_DATA_FROM_MCU = True
 
-import time, sys, serial, signal
+import time, sys, serial, signal, os
 
 sys.path.append("../")
 t0 = time.time()
@@ -29,10 +29,17 @@ while time.time()-t0<5:
         except:
             continue
     else:
-        print("MCU(like arduino) serial data Enabled")
-        # from mpu9250_serial import *
-        from mpu9250_serial import *
-        mcu_serial_start()
+        try:
+            print("MCU(like arduino) serial data Enabled")
+            path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            sys.path.append(path)
+            import mpu9250_serial
+            if(mpu9250_serial.mcu_serial_start(port_name = "/dev/ttyUSB0")):
+                start_bool = True
+                break
+
+        except:
+            continue
 
 import numpy as np
 import csv
@@ -78,7 +85,8 @@ def mag_cal():
                 if not USING_SERIAL_DATA_FROM_MCU:
                     mx,my,mz = AK8963_conv() # read and convert AK8963 magnetometer data
                 else:
-                    mx,my,mz = mcu_serial_get_data() # read and convert AK8963 magnetometer data using serial and MCU
+                    mx,my,mz = mpu9250_serial.mcu_serial_get_data() # read and convert AK8963 magnetometer data using serial and MCU
+                    print(mx,my,mz)
             except KeyboardInterrupt:
                 break
             except:
