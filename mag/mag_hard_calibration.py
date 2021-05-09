@@ -12,17 +12,28 @@
 ######################################################
 #
 # wait 5-sec for IMU to connect
-import time,sys
+USING_SERIAL_DATA_FROM_MCU = True
+
+import time, sys, serial, signal
+
 sys.path.append("../")
 t0 = time.time()
 start_bool = False # if IMU start fails - stop calibration
+
 while time.time()-t0<5:
-    try: 
-        from mpu9250_i2c import *
-        start_bool = True
-        break
-    except:
-        continue
+    if not USING_SERIAL_DATA_FROM_MCU:
+        try: 
+            from mpu9250_i2c import *
+            start_bool = True
+            break
+        except:
+            continue
+    else:
+        print("MCU(like arduino) serial data Enabled")
+        # from mpu9250_serial import *
+        from mpu9250_serial import *
+        mcu_serial_start()
+
 import numpy as np
 import csv
 import matplotlib.pyplot as plt
@@ -64,7 +75,10 @@ def mag_cal():
         t0 = time.time()
         while True:
             try:
-                mx,my,mz = AK8963_conv() # read and convert AK8963 magnetometer data
+                if not USING_SERIAL_DATA_FROM_MCU:
+                    mx,my,mz = AK8963_conv() # read and convert AK8963 magnetometer data
+                else:
+                    mx,my,mz = mcu_serial_get_data() # read and convert AK8963 magnetometer data using serial and MCU
             except KeyboardInterrupt:
                 break
             except:
@@ -121,8 +135,7 @@ def mag_cal_plot():
         axs[jj].set_xlim(mag_lims) # set limits
         axs[jj].legend() # legend
         axs[jj].set_aspect('equal',adjustable='box') # square axes
-    fig.savefig('mag_cal_hard_offset_white.png',dpi=300,bbox_inches='tight',
-                facecolor='#FFFFFF') # save figure
+    fig.savefig('mag_cal_hard_offset_white.png',dpi=300,bbox_inches='tight', facecolor='#FFFFFF') # save figure
     plt.show() #show plot
 
 if __name__ == '__main__':
