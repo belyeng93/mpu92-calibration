@@ -17,7 +17,7 @@ USING_SERIAL_DATA_FROM_MCU = True
 
 if USING_SERIAL_DATA_FROM_MCU:
     print("Check that in your MCU has been loaded mpu9250mag sketch")
-    print("Check that in your MCU has been loaded mpu9250mag sketch")
+    print("Check port default:  ttyUSB0")
     
 
 import time, sys, serial, signal, os
