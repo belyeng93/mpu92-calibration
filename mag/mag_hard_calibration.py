@@ -1,10 +1,11 @@
 ######################################################
 # Copyright (c) 2021 Maker Portal LLC
-# Author: Joshua Hrisko
+# Author: Joshua Hrisko and Emanuele Belia
 ######################################################
 #
 # This code reads data from the MPU9250/MPU9265 board
 # (MPU6050 - accel/gyro, AK8963 - mag)
+# passing through and MCU with serial port
 # and solves for tje hard iron offset for a
 # magnetometer using a calibration block
 #
@@ -13,6 +14,11 @@
 #
 # wait 5-sec for IMU to connect
 USING_SERIAL_DATA_FROM_MCU = True
+
+if USING_SERIAL_DATA_FROM_MCU:
+    print("Check that in your MCU has been loaded mpu9250mag sketch")
+    print("Check that in your MCU has been loaded mpu9250mag sketch")
+    
 
 import time, sys, serial, signal, os
 
@@ -95,7 +101,9 @@ def mag_cal():
         mag_array = mag_array[20:] # throw away first few points (buffer clearing)
         mag_cal_rotation_vec.append(mag_array) # calibration array
         print("Sample Rate: {0:2.0f} Hz".format(len(mag_array)/(time.time()-t0)))
-        
+
+    mpu9250_serial.mcu_serial_stop()
+
     mag_cal_rotation_vec = np.array(mag_cal_rotation_vec) # make numpy array
     ak_fit_coeffs = []
     indices_to_save = [0,0,1] # indices to save as offsets
