@@ -148,25 +148,3 @@ if __name__ == '__main__':
         fig.savefig('gyroscope_integration_180deg_rot.png',dpi=300,
                     bbox_inches='tight',facecolor='#FFFFFF')
         plt.show()
-        
-        # #
-        # ###################################
-        # # Plot with and without offsets
-        # ###################################
-        # #
-        # plt.style.use('ggplot')
-        # fig,axs = plt.subplots(2,1,figsize=(12,9))
-        # for ii in range(0,3):
-        #     axs[0].plot(data[:,ii],
-        #                 label='${}$, Uncalibrated'.format(gyro_labels[ii]))
-        #     axs[1].plot(data[:,ii]-gyro_offsets[ii],
-        #                 label='${}$, Calibrated'.format(gyro_labels[ii]))
-        # axs[0].legend(fontsize=14);axs[1].legend(fontsize=14)
-        # axs[0].set_ylabel('$w_{x,y,z}$ [$^{\circ}/s$]',fontsize=18)
-        # axs[1].set_ylabel('$w_{x,y,z}$ [$^{\circ}/s$]',fontsize=18)
-        # axs[1].set_xlabel('Sample',fontsize=18)
-        # axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-        # axs[0].set_title('Gyroscope Calibration Offset Correction',fontsize=22)
-        # fig.savefig('gyro_calibration_output.png',dpi=300,
-        #             bbox_inches='tight',facecolor='#FCFCFC')
-        # fig.show()
