@@ -117,56 +117,27 @@ if __name__ == '__main__':
 
         mpu9250_serial.mcu_serial_stop()
 
-        ##################################
-        # Offset and Integration of gyro
-        # and plotting results
-        ##################################
+        data = np.array(data)
+
         #
-        rot_axis = 2 # axis being rotated (2 = z-axis)
-        data_offseted = np.array(data)[:,rot_axis]-gyro_offsets[rot_axis]
-        integ1_array = cumtrapz(data_offseted,x=t_vec) # integrate once in time
+        ###################################
+        # Plot with and without offsets
+        ###################################
         #
-        # print out reuslts
-        print("Integration of {} in {}".format(gyro_labels[rot_axis],
-                       gyro_labels[rot_axis].split("_")[1])+\
-              "-dir: {0:2.2f}m".format(integ1_array[-1]))
-        #
-        # plotting routine
         plt.style.use('ggplot')
         fig,axs = plt.subplots(2,1,figsize=(12,9))
-        axs[0].plot(t_vec,data_offseted,label="$"+gyro_labels[rot_axis]+"$")
-        axs[1].plot(t_vec[1:],integ1_array,
-                    label=r"$\theta_"+gyro_labels[rot_axis].split("_")[1]+"$")
-        [axs[ii].legend(fontsize=16) for ii in range(0,len(axs))]
-        axs[0].set_ylabel('Angular Velocity, $\omega_{}$ [$^\circ/s$]'.format(gyro_labels[rot_axis].\
-                                           split("_")[1]),fontsize=16)
-        axs[1].set_ylabel(r'Rotation, $\theta_{}$ [$^\circ$]'.format(gyro_labels[rot_axis].\
-                                               split("_")[1]),fontsize=16)
-        axs[1].set_xlabel('Time [s]',fontsize=16)
-        axs[0].set_title('Gyroscope Integration over 180$^\circ$ Rotation',
-                         fontsize=18)
-        fig.savefig('gyroscope_integration_180deg_rot.png',dpi=300,
-                    bbox_inches='tight',facecolor='#FFFFFF')
+        for ii in range(0,3):
+            axs[0].plot(data[:,ii],
+                        label='${}$, Uncalibrated'.format(gyro_labels[ii]))
+            axs[1].plot(data[:,ii]-gyro_offsets[ii],
+                        label='${}$, Calibrated'.format(gyro_labels[ii]))
+        axs[0].legend(fontsize=14);axs[1].legend(fontsize=14)
+        axs[0].set_ylabel('$w_{x,y,z}$ [$^{\circ}/s$]',fontsize=18)
+        axs[1].set_ylabel('$w_{x,y,z}$ [$^{\circ}/s$]',fontsize=18)
+        axs[1].set_xlabel('Sample',fontsize=18)
+        axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
+        axs[0].set_title('Gyroscope Calibration Offset Correction',fontsize=22)
+        fig.savefig('gyro_calibration_output.png',dpi=300,
+                    bbox_inches='tight',facecolor='#FCFCFC')
+        fig.show()
         plt.show()
-        
-        # #
-        # ###################################
-        # # Plot with and without offsets
-        # ###################################
-        # #
-        # plt.style.use('ggplot')
-        # fig,axs = plt.subplots(2,1,figsize=(12,9))
-        # for ii in range(0,3):
-        #     axs[0].plot(data[:,ii],
-        #                 label='${}$, Uncalibrated'.format(gyro_labels[ii]))
-        #     axs[1].plot(data[:,ii]-gyro_offsets[ii],
-        #                 label='${}$, Calibrated'.format(gyro_labels[ii]))
-        # axs[0].legend(fontsize=14);axs[1].legend(fontsize=14)
-        # axs[0].set_ylabel('$w_{x,y,z}$ [$^{\circ}/s$]',fontsize=18)
-        # axs[1].set_ylabel('$w_{x,y,z}$ [$^{\circ}/s$]',fontsize=18)
-        # axs[1].set_xlabel('Sample',fontsize=18)
-        # axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-        # axs[0].set_title('Gyroscope Calibration Offset Correction',fontsize=22)
-        # fig.savefig('gyro_calibration_output.png',dpi=300,
-        #             bbox_inches='tight',facecolor='#FCFCFC')
-        # fig.show()
