@@ -39,4 +39,8 @@ def mcu_serial_get_data():
 	str_rn = b.decode()
 	string = str_rn.rstrip()
 	string_list = string.split(",") 
-	return float(string_list[0]), float(string_list[1]), float(string_list[2])
+	try:
+		return float(string_list[0]), float(string_list[1]), float(string_list[2])
+	except:
+		print(string_list)
+		return 0, 0, 0

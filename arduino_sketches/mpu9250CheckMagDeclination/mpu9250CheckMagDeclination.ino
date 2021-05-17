@@ -17,12 +17,18 @@ void setup() {
 
 void loop() {
     if (mpu.update()) {
-        Serial.print(mpu.getGyroX());
-        Serial.print(",");
-        Serial.print(mpu.getGyroY());
-        Serial.print(",");
-        Serial.print(mpu.getGyroZ());
-        Serial.println();
-        // delay(100);
+//      Serial.print(mpu.getMagX());
+//      Serial.print(", ");
+//      Serial.print(mpu.getMagY());
+//      Serial.print(", ");
+//      Serial.print(mpu.getMagZ());
+//      Serial.println();
+
+      float magDeck = sqrt(pow(mpu.getMagX(),2) + pow(mpu.getMagY(),2));
+      Serial.print("Mag declination: ");
+      Serial.print(magDeck);
+      Serial.println();
+      
     }
+    delay(200);
 }

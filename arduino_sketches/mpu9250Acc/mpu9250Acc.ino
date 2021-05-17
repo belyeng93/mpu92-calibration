@@ -23,6 +23,9 @@ void loop() {
         Serial.print(", ");
         Serial.print(mpu.getAccZ());
         Serial.println();
-        delay(1000);
+        //Serial.println("---------");
+        // delay(200);
     }
+    delay(200);
+
 }

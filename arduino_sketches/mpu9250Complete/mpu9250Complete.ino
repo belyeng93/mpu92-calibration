@@ -14,15 +14,15 @@ void setup() {
         Serial.println("MPU connection OK!");
     }
 }
-
+//TODO: send data serial separated by dot comma 
 void loop() {
     if (mpu.update()) {
-        Serial.print(mpu.getGyroX());
-        Serial.print(",");
-        Serial.print(mpu.getGyroY());
-        Serial.print(",");
-        Serial.print(mpu.getGyroZ());
+        Serial.print(mpu.getAccX());
+        Serial.print(", ");
+        Serial.print(mpu.getAccY());
+        Serial.print(", ");
+        Serial.print(mpu.getAccZ());
         Serial.println();
-        // delay(100);
+        delay(1000);
     }
 }
