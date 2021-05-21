@@ -41,7 +41,7 @@ def MPU6050_start():
     bus.write_byte_data(MPU6050_ADDR, ACCEL_CONFIG, int(accel_config_sel[accel_indx]))
     time.sleep(0.1)
     # interrupt register (related to overflow of data [FIFO])
-    bus.write_byte_data(MPU6050_ADDR,INT_PIN_CFG,0x22)
+    bus.write_byte_data(MPU6050_ADDR, INT_PIN_CFG,0x22)
     time.sleep(0.1)
     # enable the AK8963 magnetometer in pass-through mode
     bus.write_byte_data(MPU6050_ADDR, INT_ENABLE, 1)
@@ -86,20 +86,27 @@ def mpu6050_conv():
 def AK8963_start():
     bus.write_byte_data(AK8963_ADDR,AK8963_CNTL,0x00)
     time.sleep(0.1)
+
     bus.write_byte_data(AK8963_ADDR,AK8963_CNTL,0x0F)
     time.sleep(0.1)
-    coeff_data = bus.read_i2c_block_data(AK8963_ADDR,AK8963_ASAX,3)
+
+    coeff_data = bus.read_i2c_block_data(AK8963_ADDR, AK8963_ASAX,3)
     AK8963_coeffx = (0.5*(coeff_data[0]-128)) / 256.0 + 1.0
     AK8963_coeffy = (0.5*(coeff_data[1]-128)) / 256.0 + 1.0
     AK8963_coeffz = (0.5*(coeff_data[2]-128)) / 256.0 + 1.0
+
     time.sleep(0.1)
+
     bus.write_byte_data(AK8963_ADDR,AK8963_CNTL,0x00)
     time.sleep(0.1)
+
     AK8963_bit_res = 0b0001 # 0b0001 = 16-bit
     AK8963_samp_rate = 0b0110 # 0b0010 = 8 Hz, 0b0110 = 100 Hz
     AK8963_mode = (AK8963_bit_res <<4)+AK8963_samp_rate # bit conversion
+    
     bus.write_byte_data(AK8963_ADDR,AK8963_CNTL,AK8963_mode)
     time.sleep(0.1)
+
     return [AK8963_coeffx,AK8963_coeffy,AK8963_coeffz] 
     
 def AK8963_reader(register):
@@ -117,8 +124,6 @@ def AK8963_reader(register):
 def AK8963_conv():
     # raw magnetometer bits
     while 1:
-##        if ((bus.read_byte_data(AK8963_ADDR,AK8963_ST1) & 0x01))!=1:
-##            return 0,0,0
         mag_x = AK8963_reader(HXH)
         mag_y = AK8963_reader(HYH)
         mag_z = AK8963_reader(HZH)
@@ -126,11 +131,7 @@ def AK8963_conv():
         # the next line is needed for AK8963
         if (bus.read_byte_data(AK8963_ADDR,AK8963_ST2)) & 0x08!=0x08:
             break
-        
-    #convert to acceleration in g and gyro dps
-##    m_x = AK8963_coeffs[0]*(mag_x/(2.0**15.0))*mag_sens
-##    m_y = AK8963_coeffs[1]*(mag_y/(2.0**15.0))*mag_sens
-##    m_z = AK8963_coeffs[2]*(mag_z/(2.0**15.0))*mag_sens
+
     m_x = (mag_x/(2.0**15.0))*mag_sens
     m_y = (mag_y/(2.0**15.0))*mag_sens
     m_z = (mag_z/(2.0**15.0))*mag_sens

@@ -40,7 +40,7 @@ while time.time()-t0<5:
             path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             sys.path.append(path)
             import mpu9250_serial
-            if(mpu9250_serial.mcu_serial_start(port_name = "/dev/ttyUSB0")):
+            if(mpu9250_serial.mcu_serial_start(port_name = "/dev/ttyUSB1")):
                 start_bool = True
                 break
 
@@ -83,16 +83,16 @@ def mag_cal():
     mag_cal_rotation_vec = [] # variable for calibration calculations
     for qq,ax_qq in enumerate(mag_cal_axes):
         input("-"*8+" Press Enter and Start Rotating the IMU Around the "+ax_qq+"-axis")
-        print("\t When Finished, Press CTRL+C")
+        mpu9250_serial.mcu_serial_flush()
         mag_array = []
         t0 = time.time()
+        print("\t Start When Finished, Press CTRL+C")
         while True:
             try:
                 if not USING_SERIAL_DATA_FROM_MCU:
                     mx,my,mz = AK8963_conv() # read and convert AK8963 magnetometer data
                 else:
-                    mx,my,mz = mpu9250_serial.mcu_serial_get_data() # read and convert AK8963 magnetometer data using serial and MCU
-                    print(mx,my,mz)
+                    _,_,_,_,_,_,mx,my,mz = mpu9250_serial.mcu_serial_get_data() # read and convert AK8963 magnetometer data using serial and MCU
             except KeyboardInterrupt:
                 break
             except:
@@ -147,8 +147,8 @@ def mag_cal_plot():
                 np.nanmax(np.nanmax(mag_cal_rotation_vec))] # array limits
     mag_lims = [-1.1*np.max(mag_lims),1.1*np.max(mag_lims)] # axes limits
     for jj in range(0,2):
-        axs[jj].set_ylim(mag_lims) # set limits
-        axs[jj].set_xlim(mag_lims) # set limits
+        # axs[jj].set_ylim(mag_lims) # set limits
+        # axs[jj].set_xlim(mag_lims) # set limits
         axs[jj].legend() # legend
         axs[jj].set_aspect('equal',adjustable='box') # square axes
     fig.savefig('mag_cal_hard_offset_white.png',dpi=300,bbox_inches='tight', facecolor='#FFFFFF') # save figure

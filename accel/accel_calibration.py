@@ -39,8 +39,6 @@ while time.time()-t0<5:
 			path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 			sys.path.append(path)
 			import mpu9250_serial
-			# if(mpu9250_serial.mcu_serial_start(port_name = "/dev/ttyUSB0")):
-			# if(mpu9250_serial.mcu_serial_start(port_name = "/dev/ttyACM0")):
 			start_bool = True
 			break
 
@@ -73,12 +71,11 @@ def accel_cal():
 	axis_vec = ['z','y','x'] # axis labels
 	cal_directions = ["upward","downward","perpendicular to gravity"] # direction for IMU cal
 	cal_indices = [2,1,0] # axis indices
-	for qq,ax_qq in enumerate(axis_vec):
+	for qq, ax_qq in enumerate(axis_vec):
 		ax_offsets = [[],[],[]]
 		print("-"*50)
-		for direc_ii,direc in enumerate(cal_directions):
-			input("-"*8+" Press Enter and Keep IMU Steady to Calibrate the Accelerometer with the -"+\
-			  ax_qq+"-axis pointed "+direc)
+		for direc_ii, direc in enumerate(cal_directions):
+			input("-"*8+"Press Enter and Keep IMU Steady to Calibrate the Accelerometer with the -"+ ax_qq +"-axis pointed "+direc)
 			if not USING_SERIAL_DATA_FROM_MCU:
 				[mpu6050_conv() for ii in range(0,cal_size)] # clear buffer between readings
 			else:
@@ -91,7 +88,7 @@ def accel_cal():
 					if not USING_SERIAL_DATA_FROM_MCU:
 						ax,ay,az = get_accel()
 					else:
-						ax,ay,az = mpu9250_serial.mcu_serial_get_data()
+						ax,ay,az,_,_,_,_,_,_ = mpu9250_serial.mcu_serial_get_data()
 					mpu_array.append([ax,ay,az])
 				except:
 					continue
@@ -124,8 +121,8 @@ if __name__ == '__main__':
 		###################################
 		#
 		accel_labels = ['a_x','a_y','a_z'] # gyro labels for plots
-		cal_size = 500 # number of points to use for calibration 1000
-		USE_ALREADY_EXIST_DATA = True
+		cal_size = 500 # number of points to use for calibration
+		USE_ALREADY_EXIST_DATA = False
 		if USE_ALREADY_EXIST_DATA:
 			f = open("./acc_offsets.txt", "r")
 			string_list = f.readlines()
@@ -159,8 +156,8 @@ if __name__ == '__main__':
 				if not USING_SERIAL_DATA_FROM_MCU:
 					data.append(np.array(get_accel()))
 				else:
-					# data.append(np.array(mpu9250_serial.mcu_serial_get_data()))
-					data.append((mpu9250_serial.mcu_serial_get_data()))
+					ax,ay,az,_,_,_,_,_,_ = mpu9250_serial.mcu_serial_get_data()
+					data.append((ax,ay,az))
 			except:
 				continue
 		data = np.array(data)

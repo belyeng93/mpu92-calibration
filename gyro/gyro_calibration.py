@@ -88,20 +88,20 @@ def gyro_cal():
 	toolbar_width = 40
 
 	# setup toolbar
-	progressbar(0, cal_size, "Calibrating Gyro:")
+	# progressbar(0, cal_size, "Calibrating Gyro:")
 
 	while True:
 		try:
 			if not USING_SERIAL_DATA_FROM_MCU:
 				wx,wy,wz = get_gyro() # get gyro vals
 			else:
-				wx,wy,wz = mpu9250_serial.mcu_serial_get_data()
+				_,_,_,wx,wy,wz,_,_,_ = mpu9250_serial.mcu_serial_get_data()
 		except:
 			continue
 
 		mpu_array.append([wx,wy,wz]) # gyro vector append
 
-		progressbar(len(mpu_array), cal_size, "Calibrating Gyro:")
+		# progressbar(len(mpu_array), cal_size, "Calibrating Gyro:")
 
 		if np.shape(mpu_array)[0]==cal_size:
 			for qq in range(0,3):
@@ -131,7 +131,7 @@ if __name__ == '__main__':
 		###################################
 		#
 		data = []
-		progressbar(0, cal_size, "Collect gyro data:")
+		# progressbar(0, cal_size, "Collect gyro data:")
 
 		while len(data) < cal_size:
 			try:
@@ -139,9 +139,11 @@ if __name__ == '__main__':
 					data.append(np.array(get_gyro()))
 				else:
 					# data.append(np.array(mpu9250_serial.mcu_serial_get_data()))
-					data.append((mpu9250_serial.mcu_serial_get_data()))
+					_,_,_,wx,wy,wz,_,_,_ = mpu9250_serial.mcu_serial_get_data()
+
+					data.append((wx,wy,wz))
 				
-				progressbar(len(data), cal_size, "Collect gyro data:")
+				# progressbar(len(data), cal_size, "Collect gyro data:")
 				
 			except:
 				continue
@@ -163,7 +165,7 @@ if __name__ == '__main__':
 		axs[0].set_ylabel('$w_{x,y,z}$ [$^{\circ}/s$]',fontsize=18)
 		axs[1].set_ylabel('$w_{x,y,z}$ [$^{\circ}/s$]',fontsize=18)
 		axs[1].set_xlabel('Sample',fontsize=18)
-		# axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
+		axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
 		axs[0].set_title('Gyroscope Calibration Offset Correction',fontsize=22)
 		fig.savefig('gyro_calibration_output.png',dpi=300,
 					bbox_inches='tight',facecolor='#FCFCFC')
